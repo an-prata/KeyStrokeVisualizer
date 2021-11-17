@@ -146,6 +146,31 @@ namespace KeyStrokeVisualizer
 			else if (hashCode == 41) keyText = "7";
 			else if (hashCode == 42) keyText = "8";
 			else if (hashCode == 43) keyText = "9";
+			// arrow keys
+			else if (hashCode == 23)
+			{
+				textBlock_Input.Text = "";
+				keyText = "⇐";
+				_replaceNext = true;
+			}
+			else if (hashCode == 24)
+			{
+				textBlock_Input.Text = "";
+				keyText = "⇑";
+				_replaceNext = true;
+			}
+			else if (hashCode == 25)
+			{
+				textBlock_Input.Text = "";
+				keyText = "⇒";
+				_replaceNext = true;
+			}
+			else if (hashCode == 26)
+			{
+				textBlock_Input.Text = "";
+				keyText = "⇓";
+				_replaceNext = true;
+			}
 			// Backspace
 			else if (hashCode == 2)
 			{
