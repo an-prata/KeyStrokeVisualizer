@@ -150,25 +150,25 @@ namespace KeyStrokeVisualizer
 			else if (hashCode == 23)
 			{
 				textBlock_Input.Text = "";
-				keyText = "⇐";
+				keyText = "←";
 				_replaceNext = true;
 			}
 			else if (hashCode == 24)
 			{
 				textBlock_Input.Text = "";
-				keyText = "⇑";
+				keyText = "↑";
 				_replaceNext = true;
 			}
 			else if (hashCode == 25)
 			{
 				textBlock_Input.Text = "";
-				keyText = "⇒";
+				keyText = "→";
 				_replaceNext = true;
 			}
 			else if (hashCode == 26)
 			{
 				textBlock_Input.Text = "";
-				keyText = "⇓";
+				keyText = "↓";
 				_replaceNext = true;
 			}
 			// Backspace
