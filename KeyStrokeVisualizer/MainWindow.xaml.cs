@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Threading;
-using System.Threading.Tasks;
 using DesktopWPFAppLowLevelKeyboardHook;
 using System.Collections.Generic;
 
@@ -13,18 +13,15 @@ namespace KeyStrokeVisualizer
 	{
 		private const int MaxDisplayLength = 28;
 
-		private LowLevelKeyboardListener _listener;
-		private System.Timers.Timer _timer;
-		private int _timeSinceLastKeyStroke;
-		private List<int> _currentKeys;
-		private bool _replaceNext;
+		public LowLevelKeyboardListener? Listener;
+		public System.Timers.Timer? Timer;
+		public int _timeSinceLastKeyStroke;
+		public List<int> _currentKeys = new();
+		public bool _replaceNext;
 
-		public MainWindow()
-		{
-			_timeSinceLastKeyStroke = 0;
-		}
+        public MainWindow() => _timeSinceLastKeyStroke = 0;
 
-		private void _listener_OnKeyUp(object sender, KeyUpArgs e)
+        private void Listener_OnKeyUp(object sender, KeyUpArgs e)
 		{
 			if (_replaceNext)
 			{
@@ -90,7 +87,7 @@ namespace KeyStrokeVisualizer
 				else keyText = "-";
 			}
 			// Period/Greator Than
-			else if (hashCode == 143)
+			else if (hashCode == 144)
 			{
 				if (_currentKeys.Contains(116) || _currentKeys.Contains(117)) keyText = ">";
 				else keyText = ".";
@@ -184,6 +181,16 @@ namespace KeyStrokeVisualizer
 				_replaceNext = true;
 				keyText = "Tab";
 			}
+			else if (hashCode == 130)
+			{
+				_replaceNext = true;
+				keyText = "Volume -";
+			}
+			else if (hashCode == 131)
+			{
+				_replaceNext = true;
+				keyText = "Volume +";
+			}
 			// If Shift is held make the char upper case.
 			else if ((_currentKeys.Contains(116) || _currentKeys.Contains(117)) && (hashCode != 116 && hashCode != 117))
 			{
@@ -203,15 +210,16 @@ namespace KeyStrokeVisualizer
 				return;
             }
 
-			textBlock_Input.Text += keyText;
+			textBlock_Input.Text += keyText + Convert.ToString(hashCode);
 			_timeSinceLastKeyStroke = 0;
 			_currentKeys.Remove(hashCode);
 		}
 
-		private void _listener_OnKeyDown(object? sender, KeyDownArgs e)
+		private void Listener_OnKeyDown(object? sender, KeyDownArgs e)
 		{
 			int hashCode = e.KeyPressed.GetHashCode();
 			
+			/*
 			if (_currentKeys.Contains(118) ||
 				_currentKeys.Contains(119) ||
 				_currentKeys.Contains(120) ||
@@ -226,12 +234,16 @@ namespace KeyStrokeVisualizer
 				else if (hashCode == 70 || hashCode == 71 && !(_currentKeys.Contains(70) || _currentKeys.Contains(71)))
 						textBlock_Input.Text += "win ";
 			}
-			else if (hashCode == 118 || hashCode == 119 || hashCode == 120 || hashCode == 121 || hashCode == 70 || hashCode == 71)
+			*/
+			if (hashCode == 118 || hashCode == 119 || hashCode == 120 || hashCode == 121 || hashCode == 70 || hashCode == 71)
 			{
 				textBlock_Input.Text = "";
-				if (hashCode == 118 || hashCode == 119) textBlock_Input.Text += "ctrl ";
-				else if (hashCode == 120 || hashCode == 121) textBlock_Input.Text += "alt ";
-				else if (hashCode == 70 || hashCode == 71) textBlock_Input.Text += "win ";
+				if ((hashCode == 118 || hashCode == 119) && !_currentKeys.Contains(118) && !_currentKeys.Contains(119)) 
+					textBlock_Input.Text += "ctrl ";
+				else if (hashCode == 120 || hashCode == 121 && !_currentKeys.Contains(120) && !_currentKeys.Contains(121)) 
+						textBlock_Input.Text += "alt ";
+				else if (hashCode == 70 || hashCode == 71 && !_currentKeys.Contains(70) && !_currentKeys.Contains(71))
+						textBlock_Input.Text += "win ";
 			}
 			// Backspace
 			else if (hashCode == 2)
@@ -245,7 +257,7 @@ namespace KeyStrokeVisualizer
 			_currentKeys.Add(hashCode);
 		}
 		
-		private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
 			_timeSinceLastKeyStroke++;
 			if (_timeSinceLastKeyStroke >= 8)
@@ -262,14 +274,14 @@ namespace KeyStrokeVisualizer
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			_listener = new LowLevelKeyboardListener();
-			_listener.OnKeyUp += _listener_OnKeyUp;
-            _listener.OnKeyDown += _listener_OnKeyDown;
-			_listener.HookKeyboard();
-			_timer = new(1000);
-			_timer.Elapsed += _timer_Elapsed;
-			_timer.AutoReset = true;
-			_timer.Enabled = true;
+			Listener = new LowLevelKeyboardListener();
+			Listener.OnKeyUp += Listener_OnKeyUp!;
+            Listener.OnKeyDown += Listener_OnKeyDown!;
+			Listener.HookKeyboard();
+			Timer = new(1000);
+			Timer.Elapsed += Timer_Elapsed;
+			Timer.AutoReset = true;
+			Timer.Enabled = true;
 			_currentKeys = new();
 			Top = 14;
 			Left = 14;
@@ -277,7 +289,7 @@ namespace KeyStrokeVisualizer
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			_listener.UnHookKeyboard();
+			if (Listener != null) Listener.UnHookKeyboard();
 		}
 	}
 }
